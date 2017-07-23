@@ -35,7 +35,6 @@ export default (Root = StackNavigator({
 const prevGetStateForAction = Root.router.getStateForAction;
 
 Root.router.getStateForAction = (action, state) => {
-  console.log("Custom getStateForAction");
   // Add new action type
   if (state && action.type === "ReplaceCurrentScreen") {
     const routes = state.routes.slice(0, state.routes.length - 1);

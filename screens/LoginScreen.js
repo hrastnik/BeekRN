@@ -9,37 +9,41 @@ import {
   Button,
   AsyncStorage
 } from "react-native";
-const PropTypes = require("prop-types");
+import PropTypes from "prop-types";
 
 export default class LoginScreen extends React.Component {
+  async tryLogin(username, password) {
+    const { restClient } = this.context;
+
+    try {
+      const data = await restClient.login(username, password);
+
+      const err = await AsyncStorage.setItem("@RestClientJWT", data.jwt);
+      if (err) {
+        console.log("Error saving JWT to local storage:", err);
+      } else {
+        console.log("JWT saved to local storage");
+      }
+
+      const { dispatch } = this.props.navigation;
+      dispatch({
+        type: "ReplaceCurrentScreen",
+        routeName: "Map",
+        params: {},
+        key: "transition_login_to_map"
+      });
+    } catch (err) {
+      Alert.alert("Error logging in: " + err);
+    }
+  }
+
   onSubmit() {
     const { username, password } = this.state;
-
-    this.context.restClient.login(username, password, (err, data) => {
-      if (err) {
-        return Alert.alert("Error logging in");
-      } else {
-        console.log("Login Success", data);
-        AsyncStorage.setItem("@RestClientJWT", data.jwt, err => {
-          if (err != null) {
-            console.log("saving JWT to local storage", err);
-          } else {
-            console.log("Success saving JWT");
-          }
-        });
-
-        this.props.navigation.dispatch({
-          type: "ReplaceCurrentScreen",
-          routeName: "Map",
-          params: {},
-          key: "transition_login_to_map"
-        });
-      }
-    });
+    this.tryLogin(username, password);
   }
 
   render() {
-    console.log("Rendering LoginScreen");
+    console.log("LoginScreen::render");
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.rootView}>
