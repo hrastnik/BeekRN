@@ -34,6 +34,7 @@ const mapSettings = {
 class MapScreen extends React.Component {
   constructor(props) {
     super(props);
+    this.props.navigation.dispatch({ type: "ResetStack" });
     this.checkPermissions();
   }
 

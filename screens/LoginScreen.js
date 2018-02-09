@@ -12,6 +12,11 @@ import {
 import PropTypes from "prop-types";
 
 export default class LoginScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.props.navigation.dispatch({ type: "ResetStack" });
+  }
+
   async tryLogin(username, password) {
     const { restClient } = this.context;
 
@@ -25,13 +30,8 @@ export default class LoginScreen extends React.Component {
         console.log("JWT saved to local storage");
       }
 
-      const { dispatch } = this.props.navigation;
-      dispatch({
-        type: "ReplaceCurrentScreen",
-        routeName: "Map",
-        params: {},
-        key: "transition_login_to_map"
-      });
+      const { navigate } = this.props.navigation;
+      navigate("Tabs");
     } catch (err) {
       Alert.alert("Error logging in: " + err);
     }

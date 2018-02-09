@@ -87,7 +87,6 @@ export default class RestClient {
     const data = await response.json();
 
     if (data.error) {
-      console.log("Something...\n", data);
       throw data.error;
     }
 

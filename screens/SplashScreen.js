@@ -16,13 +16,8 @@ export default class SplashScreen extends React.Component {
     this.initRestClient();
   }
 
-  gotoScreen(screenName, params = {}) {
-    this.props.navigation.dispatch({
-      type: "ReplaceCurrentScreen",
-      routeName: screenName,
-      key: "transition_splash_to_" + screenName,
-      params
-    });
+  async gotoScreen(screenName) {
+    return this.props.navigation.navigate(screenName);
   }
 
   async initRestClient() {
@@ -30,7 +25,6 @@ export default class SplashScreen extends React.Component {
     let jwt = await AsyncStorage.getItem("@RestClientJWT");
 
     if (jwt === null) {
-      console.log("JWT is null, going to LoginScreen");
       return this.gotoScreen("Login");
     } else {
       let { restClient } = this.context;
@@ -39,22 +33,20 @@ export default class SplashScreen extends React.Component {
 
       try {
         const isLoggedIn = await restClient.isLoggedIn();
-        if (isLoggedIn) {
-          console.log("Logged in, going to Map screen");
-          this.gotoScreen("Map");
-        } else {
-          console.log("Not logged in, going to Login");
-          return this.gotoScreen("Login");
-        }
+        console.log('isLoggedIn ? ', isLoggedIn);
+        const newTabName = isLoggedIn ? "Tabs" : "Login";
+        console.log('newTabName:', newTabName);
+        return this.gotoScreen(newTabName);
       } catch (err) {
-        console.log("Error in restClient\n", err);
-        throw err;
+        console.log("Error initializing REST client\n", err);
+        return false;
       }
     }
   }
 
   render() {
     console.log("SplashScreen::render");
+
     var screen_w = Dimensions.get("window").width;
     var screen_h = Dimensions.get("window").height;
     return (
